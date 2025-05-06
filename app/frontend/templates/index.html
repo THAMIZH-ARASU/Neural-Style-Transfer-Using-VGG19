@@ -1,0 +1,372 @@
+<!-- app/frontend/templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Style Transfer | VGG19</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="branding">
+                <img src="{{ url_for('static', filename='img/logo.svg') }}" alt="Logo" class="logo">
+                <h1>Neural Style Transfer</h1>
+            </div>
+            <nav>
+                <a href="#how-it-works" class="nav-link">How It Works</a>
+                <a href="#about" class="nav-link">About</a>
+                <div class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-switch">
+                        <span class="slider round"></span>
+                    </label>
+                    <i class="fas fa-sun"></i>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Transform Your Images with the Power of AI</h2>
+                    <p>Use VGG19 neural network to apply artistic styles to your photos. Create unique masterpieces with our state-of-the-art style transfer technology.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Image Upload Section -->
+        <section class="upload-section">
+            <div class="container">
+                <h2>Create Your Artwork</h2>
+                
+                <div id="upload-container" class="upload-container">
+                    <div class="upload-box">
+                        <div class="upload-area" id="content-upload-area">
+                            <div class="upload-instructions">
+                                <i class="fas fa-image"></i>
+                                <h3>Content Image</h3>
+                                <p>The image you want to stylize</p>
+                                <label class="upload-btn">
+                                    Choose File
+                                    <input type="file" id="content-input" accept="image/png, image/jpeg" hidden>
+                                </label>
+                            </div>
+                            <div class="preview-container" id="content-preview-container" style="display: none;">
+                                <img id="content-preview" src="#" alt="Content Preview">
+                                <button type="button" class="remove-btn" id="remove-content-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-box">
+                        <div class="upload-area" id="style-upload-area">
+                            <div class="upload-instructions">
+                                <i class="fas fa-palette"></i>
+                                <h3>Style Image</h3>
+                                <p>The style you want to apply</p>
+                                <label class="upload-btn">
+                                    Choose File
+                                    <input type="file" id="style-input" accept="image/png, image/jpeg" hidden>
+                                </label>
+                            </div>
+                            <div class="preview-container" id="style-preview-container" style="display: none;">
+                                <img id="style-preview" src="#" alt="Style Preview">
+                                <button type="button" class="remove-btn" id="remove-style-btn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="upload-btn" class="primary-btn" disabled>
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Images
+                </button>
+            </div>
+        </section>
+        
+        <!-- Parameters Section (initially hidden) -->
+        <section id="parameters-section" class="parameters-section hidden">
+            <div class="container">
+                <h2>Customize Your Style Transfer</h2>
+                <p class="section-description">Adjust the parameters to fine-tune your artistic result</p>
+                
+                <div class="parameters-container">
+                    <div class="parameter-group">
+                        <h3>Main Parameters</h3>
+                        
+                        <div class="parameter">
+                            <label for="content-weight">Content Weight</label>
+                            <div class="slider-container">
+                                <input type="range" id="content-weight" min="0.1" max="10" step="0.1" value="1.0">
+                                <span class="value-display" id="content-weight-display">1.0</span>
+                            </div>
+                            <p class="parameter-description">How closely to match the content image</p>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="style-weight">Style Weight (×10<sup>6</sup>)</label>
+                            <div class="slider-container">
+                                <input type="range" id="style-weight" min="0.1" max="10" step="0.1" value="1.0">
+                                <span class="value-display" id="style-weight-display">1.0</span>
+                            </div>
+                            <p class="parameter-description">How strongly to apply the style</p>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="steps">Optimization Steps</label>
+                            <div class="slider-container">
+                                <input type="range" id="steps" min="100" max="1000" step="50" value="300">
+                                <span class="value-display" id="steps-display">300</span>
+                            </div>
+                            <p class="parameter-description">Higher values produce better results but take longer</p>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="learning-rate">Learning Rate</label>
+                            <div class="slider-container">
+                                <input type="range" id="learning-rate" min="0.001" max="0.01" step="0.001" value="0.003">
+                                <span class="value-display" id="learning-rate-display">0.003</span>
+                            </div>
+                            <p class="parameter-description">Speed of optimization (lower is more stable)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="parameter-group">
+                        <h3>Style Layer Weights</h3>
+                        <p class="parameter-description">Adjust individual layer contributions to the style</p>
+                        
+                        <div class="parameter">
+                            <label for="conv1-1-weight">Conv1_1 (Fine Details)</label>
+                            <div class="slider-container">
+                                <input type="range" id="conv1-1-weight" min="0" max="2" step="0.1" value="1.0">
+                                <span class="value-display" id="conv1-1-weight-display">1.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="conv2-1-weight">Conv2_1 (Small Features)</label>
+                            <div class="slider-container">
+                                <input type="range" id="conv2-1-weight" min="0" max="2" step="0.1" value="0.8">
+                                <span class="value-display" id="conv2-1-weight-display">0.8</span>
+                            </div>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="conv3-1-weight">Conv3_1 (Mid-level Features)</label>
+                            <div class="slider-container">
+                                <input type="range" id="conv3-1-weight" min="0" max="2" step="0.1" value="0.5">
+                                <span class="value-display" id="conv3-1-weight-display">0.5</span>
+                            </div>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="conv4-1-weight">Conv4_1 (Patterns)</label>
+                            <div class="slider-container">
+                                <input type="range" id="conv4-1-weight" min="0" max="2" step="0.1" value="0.3">
+                                <span class="value-display" id="conv4-1-weight-display">0.3</span>
+                            </div>
+                        </div>
+                        
+                        <div class="parameter">
+                            <label for="conv5-1-weight">Conv5_1 (Large Structures)</label>
+                            <div class="slider-container">
+                                <input type="range" id="conv5-1-weight" min="0" max="2" step="0.1" value="0.1">
+                                <span class="value-display" id="conv5-1-weight-display">0.1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-preset="balanced">Balanced</button>
+                    <button class="preset-btn" data-preset="content-focused">Content Focused</button>
+                    <button class="preset-btn" data-preset="style-focused">Style Focused</button>
+                    <button class="preset-btn" data-preset="fine-details">Fine Details</button>
+                    <button class="preset-btn" data-preset="large-patterns">Large Patterns</button>
+                </div>
+                
+                <button id="start-transfer-btn" class="primary-btn">
+                    <i class="fas fa-magic"></i> Start Style Transfer
+                </button>
+            </div>
+        </section>
+        
+        <!-- Results Section (initially hidden) -->
+        <section id="results-section" class="results-section hidden">
+            <div class="container">
+                <h2>Your Stylized Image</h2>
+                
+                <div class="processing-indicator" id="processing-indicator">
+                    <div class="spinner">
+                        <div class="bounce1"></div>
+                        <div class="bounce2"></div>
+                        <div class="bounce3"></div>
+                    </div>
+                    <p>Processing your image...</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    <p id="progress-text">Step: 0/300</p>
+                </div>
+                
+                <div class="result-container" id="result-container" style="display: none;">
+                    <div class="image-comparison">
+                        <div class="comparison-item">
+                            <h3>Content Image</h3>
+                            <div class="comparison-image">
+                                <img id="content-result" src="#" alt="Content Image">
+                            </div>
+                        </div>
+                        
+                        <div class="comparison-item">
+                            <h3>Style Image</h3>
+                            <div class="comparison-image">
+                                <img id="style-result" src="#" alt="Style Image">
+                            </div>
+                        </div>
+                        
+                        <div class="comparison-item result-item">
+                            <h3>Stylized Result</h3>
+                            <div class="comparison-image">
+                                <img id="stylized-result" src="#" alt="Stylized Result">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <a id="download-btn" class="primary-btn" download>
+                            <i class="fas fa-download"></i> Download Image
+                        </a>
+                        <button id="retry-btn" class="secondary-btn">
+                            <i class="fas fa-redo"></i> Try Different Parameters
+                        </button>
+                        <button id="new-images-btn" class="secondary-btn">
+                            <i class="fas fa-images"></i> Use New Images
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="how-it-works-section">
+            <div class="container">
+                <h2>How Neural Style Transfer Works</h2>
+                
+                <div class="process-steps">
+                    <div class="process-step">
+                        <div class="step-number">1</div>
+                        <div class="step-icon"><i class="fas fa-network-wired"></i></div>
+                        <h3>Feature Extraction</h3>
+                        <p>Our system uses a pre-trained VGG19 neural network to extract content and style features from your images.</p>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">2</div>
+                        <div class="step-icon"><i class="fas fa-code-branch"></i></div>
+                        <h3>Content & Style Separation</h3>
+                        <p>Different layers of the network capture different aspects of your images, from fine details to large structures.</p>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">3</div>
+                        <div class="step-icon"><i class="fas fa-cogs"></i></div>
+                        <h3>Optimization Process</h3>
+                        <p>The algorithm gradually updates a new image to match both content features and style patterns.</p>
+                    </div>
+                    
+                    <div class="process-step">
+                        <div class="step-number">4</div>
+                        <div class="step-icon"><i class="fas fa-image"></i></div>
+                        <h3>Final Result</h3>
+                        <p>Your content image is transformed to match the artistic style while preserving its original structure.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- About Section -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <h2>About This Project</h2>
+                <p>This Neural Style Transfer application leverages deep learning techniques to transform ordinary photos into artistic masterpieces. Built using PyTorch and the VGG19 convolutional neural network, it implements the neural style transfer algorithm introduced by Gatys et al. in their 2016 paper.</p>
+                
+                <div class="tech-stack">
+                    <h3>Technology Stack</h3>
+                    <div class="tech-icons">
+                        <div class="tech-icon">
+                            <i class="fab fa-python"></i>
+                            <span>Python</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fas fa-server"></i>
+                            <span>FastAPI</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fas fa-flask"></i>
+                            <span>Flask</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fas fa-brain"></i>
+                            <span>PyTorch</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-js"></i>
+                            <span>JavaScript</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-html5"></i>
+                            <span>HTML5</span>
+                        </div>
+                        <div class="tech-icon">
+                            <i class="fab fa-css3-alt"></i>
+                            <span>CSS3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Neural Style Transfer | VGG19. All rights reserved.</p>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
