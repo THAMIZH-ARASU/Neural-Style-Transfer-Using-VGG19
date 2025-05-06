@@ -1,6 +1,6 @@
 # Neural Style Transfer Web Application
 
-![Neural Style Transfer](notebooks\images\Concept.png)
+![Neural Style Transfer](notebooks/images/Concept.png)
 
 ## Overview
 
