@@ -176,5 +176,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Neural Style Transfer is based on the paper "A Neural Algorithm of Artistic Style" by Gatys et al.
+- Neural Style Transfer is based on the paper ["A Neural Algorithm of Artistic Style"](http://arxiv.org/pdf/1508.06576) by Gatys et al.
 - The implementation uses the VGG19 model architecture pre-trained on ImageNet.
