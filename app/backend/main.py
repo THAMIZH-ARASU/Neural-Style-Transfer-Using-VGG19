@@ -9,7 +9,7 @@ import numpy as np
 import torch.optim as optim
 from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from typing import Optional
 from torchvision import transforms, models
@@ -242,7 +242,7 @@ async def transfer_style(
             raise HTTPException(status_code=404, detail="Images not found")
         
         # Validate parameters
-        if steps < 50 or steps > 1000:
+        if steps < 50 or steps > 100000:
             raise HTTPException(status_code=400, detail="Steps should be between 50 and 1000")
         
         # Load images for processing
@@ -288,14 +288,17 @@ async def transfer_style(
 
 @app.get("/download/{result_id}")
 async def download_result(result_id: str):
-    """Get the download link for a result"""
+    """Download the result image"""
     result_path = f"results/{result_id}.jpg"
     if not os.path.exists(result_path):
         raise HTTPException(status_code=404, detail="Result not found")
     
-    return JSONResponse({
-        "download_url": f"/static/results/{result_id}.jpg"
-    })
+    # Return the file as a download response
+    return FileResponse(
+        path=result_path,
+        filename=f"neural_style_transfer_{result_id}.jpg",
+        media_type="image/jpeg"
+    )
 
 # Health check endpoint
 @app.get("/health")

@@ -1,7 +1,7 @@
 # app/frontend/app.py
 import os
 import requests
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_from_directory
+from flask import Flask, Response, render_template, request, redirect, stream_with_context, url_for, flash, jsonify, send_from_directory
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -128,30 +128,29 @@ def transfer_style():
 @app.route('/download/<result_id>')
 def download_result(result_id):
     try:
-        # Get download URL from API
-        response = requests.get(f"{API_URL}/download/{result_id}")
+        # With the updated FastAPI endpoint, we can directly stream the file
+        # Create a stream request to the API endpoint
+        api_download_url = f"{API_URL}/download/{result_id}"
         
-        if response.status_code == 200:
-            # Get image from API
-            img_response = requests.get(f"{API_URL}{response.json()['download_url']}")
+        # Use stream=True to avoid loading the entire file into memory
+        img_response = requests.get(api_download_url, stream=True)
+        
+        if img_response.status_code == 200:
+            # Get the filename from the Content-Disposition header or use a default
+            filename = f"neural_style_transfer_{result_id}.jpg"
             
-            if img_response.status_code == 200:
-                # Save locally
-                result_path = os.path.join(RESULTS_FOLDER, f"{result_id}.jpg")
-                with open(result_path, 'wb') as f:
-                    f.write(img_response.content)
-                
-                return send_from_directory(
-                    os.path.dirname(result_path),
-                    os.path.basename(result_path),
-                    as_attachment=True,
-                    download_name=f"neural_style_transfer_{result_id}.jpg"
-                )
-            else:
-                flash('Error downloading the image', 'error')
-                return redirect(url_for('index'))
+            # Create a Flask response that streams the content
+            response = Response(
+                stream_with_context(img_response.iter_content(chunk_size=2048)),
+                content_type=img_response.headers.get('content-type', 'image/jpeg')
+            )
+            
+            # Set the Content-Disposition header to trigger download
+            response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+            
+            return response
         else:
-            flash('Result not found', 'error')
+            flash('Error downloading the image', 'error')
             return redirect(url_for('index'))
             
     except Exception as e:
