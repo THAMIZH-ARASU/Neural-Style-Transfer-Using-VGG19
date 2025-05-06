@@ -71,15 +71,15 @@ set API_URL=http://localhost:8000
 ## Frontend View
 
 <p align="center">
-  <img src="notebooks/images/webview1.png" alt="Neural Style Transfer Web View">
+  <img src="notebooks/images/web_view1.png" alt="Neural Style Transfer Web View">
 </p>
 
 <p align="center">
-  <img src="notebooks/images/webview2.png" alt="Neural Style Transfer Web View">
+  <img src="notebooks/images/web_view2.png" alt="Neural Style Transfer Web View">
 </p>
 
 <p align="center">
-  <img src="notebooks/images/webview3.png" alt="Neural Style Transfer Web View">
+  <img src="notebooks/images/web_view3.png" alt="Neural Style Transfer Web View">
 </p>
 
 ## Usage
