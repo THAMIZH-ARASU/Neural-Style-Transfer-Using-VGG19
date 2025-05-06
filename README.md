@@ -1,6 +1,8 @@
 # Neural Style Transfer Web Application
 
-![Neural Style Transfer](notebooks/images/Concept.png)
+<p align="center">
+  <img src="notebooks/images/Concept.png" alt="Neural Style Transfer">
+</p>
 
 ## Overview
 
@@ -66,6 +68,19 @@ export API_URL=http://localhost:8000
 # For Windows
 set API_URL=http://localhost:8000
 ```
+## Frontend View
+
+<p align="center">
+  <img src="notebooks/images/webview1.png" alt="Neural Style Transfer Web View">
+</p>
+
+<p align="center">
+  <img src="notebooks/images/webview2.png" alt="Neural Style Transfer Web View">
+</p>
+
+<p align="center">
+  <img src="notebooks/images/webview3.png" alt="Neural Style Transfer Web View">
+</p>
 
 ## Usage
 
